@@ -96,13 +96,42 @@ int vdx_load_url(char *url)
     return ret;
 }
 
-void vdx_download()
+static int vdx_download1(char *url, int i)
+{
+    AVIOContext *io = 0;
+    int ret = 0;
+    ret = avio_open(&io, url, AVIO_FLAG_READ);
+
+    if (ret < 0)
+	return 1;
+    do {
+	unsigned char buf[10540];
+	while (1) {
+	    ret = avio_read(io, buf, sizeof(buf));
+	    if (ret < 0) {
+		ret = 0;
+	    }
+	    if (ret == 0)
+		break;
+	    if (i == 0)
+		fwrite(buf, 1, ret, stdout), fflush(stdout);
+	}
+    } while (0);
+
+    avio_close(io);
+
+    return 0;
+}
+
+void vdx_download(int it)
 {
     int i;
+    int di = 0;
     json_t *element;
 
     if (!murl)
 	return;
+
     json_array_foreach(murl, i, element)
 // Element ????
     {
@@ -111,31 +140,22 @@ void vdx_download()
 
 	const char *t = json_string_value(type);
 	const char *u = json_string_value(url);
-	if (!strcasecmp("high", t)) {
-	    //    puts(u);
-	    AVIOContext *io = 0;
-	    int ret = 0;
-	    ret = avio_open(&io, u, AVIO_FLAG_READ);
+	if ((it ? 1 : 0) == !strcasecmp("high", t)) {
+#if 1
+	    vdx_download1(u, di++);
+	}
+#endif
+    }
+}
 
-	    if (ret < 0)
-		break;
-	    do {
-		unsigned char buf[10540];
-		while (1) {
-		    ret = avio_read(io, buf, sizeof(buf));
-		    if (ret < 0) {
-			ret = 0;
-		    }
-		    if (ret == 0)
-			break;
-		    fwrite(buf, 1, ret, stdout), fflush(stdout);
-		}
-	    } while (0);
-
-	    avio_close(io);
-
+static void pr_attr(xmlAttrPtr p)
+{
+    while (p) {
+	if (!strcmp("href", p->name)) {
+	    printf("%s=%s\n", p->name, p->children->content);
 	    break;
 	}
+	p = p->next;
     }
 }
 
@@ -161,6 +181,9 @@ void my_dump(htmlNodePtr p)
 		    p = t + 1;
 		}
 	    }
+	} else if (p->name && !strcmp("a", p->name)) {
+	    puts(p->name);
+	    pr_attr(p->properties);
 	}
 	my_dump(p->children);
 	p = (p->next);

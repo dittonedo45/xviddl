@@ -15,6 +15,7 @@ int argsc;
 char **args, **env;
 {
     char **p = args + 1;
+    int is_high = 1;
 
     /* I just hate the motherfucken logs of crap, kidding (We do not need error but
      * To be honey right ?!!
@@ -30,6 +31,6 @@ char **args, **env;
 	p++;
     }
 
-    vdx_download();
+    vdx_download(is_high);
     return 0;
 }

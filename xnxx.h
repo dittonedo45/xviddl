@@ -21,6 +21,6 @@ extern json_t *murl;
 void vdx_add(char *);
 int vdx_load_url(char *);
 void my_dump (htmlNodePtr);
-void vdx_download();
+void vdx_download(int is_high);
 
 #endif /* SEX_IN */
