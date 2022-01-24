@@ -152,7 +152,7 @@ static void pr_attr(xmlAttrPtr p)
 {
     while (p) {
 	if (!strcmp("href", p->name)) {
-	    printf("%s=%s\n", p->name, p->children->content);
+	    //printf("%s=%s\n", p->name, p->children->content);
 	    break;
 	}
 	p = p->next;
@@ -181,9 +181,6 @@ void my_dump(htmlNodePtr p)
 		    p = t + 1;
 		}
 	    }
-	} else if (p->name && !strcmp("a", p->name)) {
-	    puts(p->name);
-	    pr_attr(p->properties);
 	}
 	my_dump(p->children);
 	p = (p->next);
