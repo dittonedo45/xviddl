@@ -113,8 +113,7 @@ static int vdx_download1(char *url, int i)
 	    }
 	    if (ret == 0)
 		break;
-	    if (i == 0)
-		fwrite(buf, 1, ret, stdout), fflush(stdout);
+	    write(1, buf, ret);
 	}
     } while (0);
 
